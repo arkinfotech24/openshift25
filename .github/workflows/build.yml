@@ -1,10 +1,8 @@
-name: Build and Test
+name: Maven Build and Test
 
 on:
-  # Auto-trigger on push to master
   push:
     branches: [ master ]
-  # Manual trigger (from GitHub UI)
   workflow_dispatch:
     inputs:
       reason:
@@ -20,14 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install dependencies
-      - name: Install dependencies
-        run: npm install  # Replace with your project's setup
+      # Set up Java (Maven requires JDK)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      # Build steps
-      - name: Build project
-        run: npm run build  # Customize for your project
+      # Build with Maven
+      - name: Build with Maven
+        run: mvn clean install  # Compiles, runs tests, and packages the JAR
 
-      # Optional: Add tests or other steps
-      - name: Run tests
-        run: npm test
+      # Optional: Run additional tests or custom goals
+      - name: Run Integration Tests
+        run: mvn verify -Pintegration-tests  # Example for profile-based tests
